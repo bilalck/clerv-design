@@ -26,7 +26,7 @@ const navItems = [
   { label: "ARTIFACTS", href: "/artifacts", icon: Archive },
   { label: "PROJECTS", href: "/projects", icon: FolderKanban },
   { label: "SEARCH", href: "/search", icon: Search },
-  { label: "RESOURCES", href: "/resources", icon: BarChart3 },
+  { label: "RESOURCES", href: "/usage", icon: BarChart3 },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
