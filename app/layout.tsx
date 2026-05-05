@@ -1,32 +1,24 @@
-import type { Metadata, Viewport } from "next"
-import "./globals.css"
-import { Sidebar } from "@/components/sidebar"
-import { Topbar } from "@/components/topbar"
+import type { Metadata, Viewport } from "next";
+import "./globals.css";
+import { AppShell } from "@/components/ui/app-shell";
 
 export const metadata: Metadata = {
   title: "AI Activity Hub",
-  description:
-    "A calm, local-first dashboard for everything you do with AI — chats, artifacts, decisions, tasks, and projects.",
-}
+  description: "Editorial-grade AI Activity Hub for tracking conversations, artifacts, and extracted intelligence across ChatGPT, Claude, Gemini, and manual imports.",
+};
 
 export const viewport: Viewport = {
-  themeColor: "#f5f3ef",
   width: "device-width",
   initialScale: 1,
-}
+  maximumScale: 1,
+};
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
-        <div className="app">
-          <Sidebar />
-          <main className="main">
-            <Topbar />
-            {children}
-          </main>
-        </div>
+        <AppShell>{children}</AppShell>
       </body>
     </html>
-  )
+  );
 }
