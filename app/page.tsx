@@ -1,224 +1,326 @@
-import { Archive, CheckCircle2, Clock3, FileText, MessageSquare, Upload } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, Tag } from "@/components/ui/card";
-import { CommandPalette } from "@/components/ui/command-palette";
-import { DataTable } from "@/components/ui/data-table";
-import { Sidebar } from "@/components/ui/sidebar";
-import { StatCard } from "@/components/ui/stat-card";
-
-const activityRows = [
-  {
-    title: "AI Activity Hub Planning",
-    platform: "ChatGPT",
-    status: "Inbox",
-    project: "Personal AI Dashboard",
-  },
-  {
-    title: "Research Dashboard Prototype",
-    platform: "Claude",
-    status: "Reviewed",
-    project: "UX Research",
-  },
-  {
-    title: "Gemini Competitor Notes",
-    platform: "Gemini",
-    status: "New",
-    project: "Research",
-  },
-];
+import { Archive, CheckCircle2, Clock, FileCode2, FileImage, FileText, MessageSquare, Sparkles, Upload } from "lucide-react";
+import Link from "next/link";
 
 const inboxItems = [
-  ["C", "Claude artifact: Research dashboard prototype", "Review"],
-  ["G", "ChatGPT chat: AI platform activity dashboard plan", "New"],
-  ["M", "Manual upload: Dashboard IA sketch", "File"],
+  { platform: "Claude", title: "Research dashboard prototype artifact", type: "Review", time: "2h ago" },
+  { platform: "ChatGPT", title: "AI platform activity dashboard plan", type: "New", time: "4h ago" },
+  { platform: "Manual", title: "Dashboard IA sketch upload", type: "File", time: "Yesterday" },
 ];
 
 const projects = [
-  ["Personal AI Dashboard", "42 events"],
-  ["Design Systems", "18 events"],
-  ["Client UX Research", "9 events"],
+  { name: "Personal AI Dashboard", events: 42, status: "Active", progress: 68 },
+  { name: "Design Systems", events: 18, status: "Active", progress: 45 },
+  { name: "Client UX Research", events: 9, status: "Paused", progress: 82 },
 ];
 
-export default function Home() {
+const artifacts = [
+  { type: "PDF", title: "Research Report v2", platform: "Claude", icon: FileText },
+  { type: "SVG", title: "Dashboard Wireframe", platform: "ChatGPT", icon: FileImage },
+  { type: "Code", title: "React Prototype", platform: "Claude", icon: FileCode2 },
+];
+
+export default function HomePage() {
   return (
-    <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[304px_minmax(0,1fr)]">
-      <Sidebar />
-
-      <main id="home" className="min-w-0">
-        <header className="sticky top-0 z-20 border-b border-line-hair bg-paper-0/90 px-6 py-3 backdrop-blur md:px-10">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <p className="editorial-kicker">Local-first / import-first / privacy-aware</p>
-            <CommandPalette />
-          </div>
-        </header>
-
-        <section className="grid min-h-[82vh] grid-cols-1 border-b border-line-hair bg-paper-0 lg:grid-cols-[0.95fr_1.05fr]">
-          <div className="flex flex-col justify-between p-10 md:p-20">
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <section className="border-b border-line-hair bg-paper-0">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_0.8fr]">
+          {/* Left Column */}
+          <div className="flex flex-col justify-between p-8 lg:p-16">
             <div>
-              <p className="editorial-kicker">AI Activity Hub / Home Screen</p>
-              <div className="my-10 h-28 w-px bg-line-strong" />
-              <h1 className="editorial-title max-w-5xl text-6xl md:text-8xl">
-                What did I do with AI recently?
+              <p className="editorial-kicker">00 — INTELLIGENCE SUMMARY</p>
+              <div className="my-8 measurement-line h-24" />
+              <h1 className="editorial-title max-w-2xl text-5xl lg:text-7xl">
+                MORNING PROTOCOL
               </h1>
-            </div>
-            <p className="mt-12 max-w-2xl text-[15px] leading-[1.72] text-[var(--grey-700)]">
-              A calm daily dashboard for reviewing recent AI activity, inbox pressure,
-              generated artifacts, extracted tasks, and active projects across ChatGPT,
-              Claude, Gemini, manual uploads, and future API logs.
-            </p>
-          </div>
-
-          <div className="relative min-h-[520px] border-l border-line-hair bg-paper-200">
-            <div className="absolute inset-[72px] border border-line-soft" />
-            <div className="absolute bottom-0 right-0 h-2/5 w-2/5 dot-field" />
-            <div className="absolute bottom-12 left-12 right-12 border border-line-hair bg-paper-0/90 p-5 shadow-line">
-              <p className="text-[11px] uppercase tracking-[0.14em] text-[var(--grey-500)]">
-                Dashboard promise
-              </p>
-              <p className="mt-3 text-sm leading-6 text-[var(--grey-700)]">
-                Timeline = what happened. Inbox = what needs review. Artifacts = what was created.
+              <p className="mt-8 max-w-xl text-[15px] leading-[1.7] text-[var(--grey-700)]">
+                A calm daily dashboard for reviewing recent AI activity, inbox pressure, 
+                generated artifacts, extracted tasks, and active projects.
               </p>
             </div>
-          </div>
-        </section>
-
-        <section className="border-b border-line-hair bg-paper-0 px-6 py-20 md:px-10 lg:px-20">
-          <div className="mb-12 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-            <div>
-              <p className="editorial-kicker">Today</p>
-              <h2 className="mt-6 max-w-4xl font-serif text-5xl uppercase leading-[0.94] tracking-[-0.035em] md:text-7xl">
-                Daily operating layer for AI work.
-              </h2>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button variant="primary">Review Inbox</Button>
-              <Button variant="secondary">Import Export</Button>
-              <Button variant="ghost">Archive Noise</Button>
+            <div className="mt-12 flex flex-wrap gap-3">
+              <Link
+                href="/inbox"
+                className="rounded-[var(--radius-2)] bg-ink px-5 py-2.5 text-[11px] font-sans uppercase tracking-[0.12em] text-paper-0 transition-opacity hover:opacity-80"
+              >
+                REVIEW INBOX
+              </Link>
+              <Link
+                href="/timeline"
+                className="rounded-[var(--radius-2)] border border-line-medium bg-paper-0 px-5 py-2.5 text-[11px] font-sans uppercase tracking-[0.12em] text-ink transition-colors hover:bg-paper-100"
+              >
+                VIEW TIMELINE
+              </Link>
             </div>
           </div>
 
-          <div className="grid gap-3 md:grid-cols-3">
-            <StatCard tag="Today" value="6" label="New chats" />
-            <StatCard tag="Artifacts" value="3" label="Created today" />
-            <StatCard tag="Inbox" value="14" label="Need review" />
+          {/* Right Column - Visual Zone */}
+          <div className="relative hidden min-h-[480px] border-l border-line-hair bg-paper-100 lg:block">
+            {/* Technical Frame */}
+            <div className="absolute inset-8 border border-line-soft" />
+            <div className="absolute bottom-0 right-0 h-1/2 w-1/2 dot-field opacity-60" />
+            
+            {/* Floating Card */}
+            <div className="absolute bottom-8 left-8 right-8 border border-line-hair bg-paper-0/95 p-6 shadow-line backdrop-blur">
+              <p className="tech-label">DASHBOARD PROMISE</p>
+              <p className="mt-3 text-sm leading-relaxed text-[var(--grey-700)]">
+                Timeline = what happened. Inbox = what needs review. Artifacts = what was created. 
+                Projects = where it belongs.
+              </p>
+            </div>
           </div>
+        </div>
+      </section>
 
-          <div className="mt-3 grid gap-3 xl:grid-cols-[1.35fr_0.65fr]">
-            <Card id="inbox">
-              <div className="flex items-start justify-between gap-4">
+      {/* Intelligence Summary Cards */}
+      <section className="border-b border-line-hair bg-paper-0 px-8 py-16 lg:px-16">
+        <div className="mb-12">
+          <p className="editorial-kicker">TODAY&apos;S PULSE</p>
+          <h2 className="mt-6 font-serif text-4xl uppercase tracking-[-0.03em] lg:text-5xl">
+            INTELLIGENCE SUMMARY
+          </h2>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          <IntelligenceCard number="6" label="NEW CHATS" tag="TODAY" trend="+2 from yesterday" />
+          <IntelligenceCard number="3" label="ARTIFACTS" tag="CREATED" trend="1 PDF, 1 SVG, 1 Code" />
+          <IntelligenceCard number="14" label="INBOX ITEMS" tag="PENDING" trend="4 high priority" />
+        </div>
+      </section>
+
+      {/* Active Projects Strip */}
+      <section className="border-b border-line-hair bg-paper-50 px-8 py-12 lg:px-16">
+        <div className="mb-8 flex items-end justify-between">
+          <div>
+            <p className="tech-label">WORKSTREAMS</p>
+            <h3 className="mt-2 font-serif text-2xl uppercase tracking-tight">ACTIVE PROJECTS</h3>
+          </div>
+          <Link
+            href="/projects"
+            className="text-[11px] font-sans uppercase tracking-[0.12em] text-[var(--grey-600)] underline underline-offset-4 transition-colors hover:text-ink"
+          >
+            VIEW ALL
+          </Link>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-3">
+          {projects.map((project) => (
+            <div
+              key={project.name}
+              className="group rounded-[var(--radius-2)] border border-line-hair bg-paper-0 p-5 transition-all hover:-translate-y-0.5 hover:border-line-medium hover:shadow-line"
+            >
+              <div className="flex items-start justify-between">
                 <div>
-                  <Tag>Inbox preview</Tag>
-                  <h3 className="mt-5 font-serif text-3xl uppercase">Unreviewed AI work</h3>
+                  <p className="font-serif text-lg uppercase tracking-tight">{project.name}</p>
+                  <p className="mt-1 text-[11px] font-sans uppercase tracking-[0.12em] text-[var(--grey-500)]">
+                    {project.events} EVENTS
+                  </p>
                 </div>
-                <InboxCount />
+                <span
+                  className={`editorial-tag ${project.status === "Paused" ? "opacity-60" : ""}`}
+                >
+                  {project.status}
+                </span>
               </div>
-              <div className="mt-6 divide-y divide-line-hair border-t border-line-hair">
-                {inboxItems.map(([icon, title, status]) => (
-                  <div key={title} className="grid grid-cols-[32px_1fr_auto] items-center gap-3 py-4">
-                    <span className="grid h-8 w-8 place-items-center border border-line-medium text-xs">{icon}</span>
-                    <p className="text-sm text-[var(--grey-700)]">{title}</p>
-                    <span className="editorial-tag">{status}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-6 flex flex-wrap gap-2">
-                <Button variant="primary">Open Inbox</Button>
-                <Button variant="ghost">Extract Tasks</Button>
-              </div>
-            </Card>
-
-            <Card id="artifacts">
-              <Tag>Recent artifact</Tag>
-              <div className="mt-6 grid min-h-44 place-items-center border border-line-hair bg-paper-100 dot-field">
-                <FileText aria-hidden="true" className="h-10 w-10" />
-              </div>
-              <h3 className="mt-5 font-serif text-2xl uppercase">Dashboard IA Plan</h3>
-              <p className="mt-3 text-sm leading-6 text-[var(--grey-700)]">
-                Generated from ChatGPT planning session. Linked to project and timeline event.
-              </p>
-            </Card>
-          </div>
-
-          <div className="mt-3 grid gap-3 xl:grid-cols-[0.9fr_1.1fr]">
-            <Card id="projects">
-              <Tag>Active projects</Tag>
-              <div className="mt-6 divide-y divide-line-hair border-t border-line-hair">
-                {projects.map(([name, count], index) => (
-                  <div key={name} className="grid grid-cols-[32px_1fr_auto] items-center gap-3 py-4">
-                    <span className="grid h-8 w-8 place-items-center border border-line-medium text-xs">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <p className="text-sm text-[var(--grey-700)]">{name}</p>
-                    <span className="editorial-tag">{count}</span>
-                  </div>
-                ))}
-              </div>
-            </Card>
-
-            <Card id="timeline">
-              <Tag>Timeline preview</Tag>
-              <div className="mt-6 space-y-6 border-l border-line-strong pl-6">
-                <TimelineEvent
-                  icon={<MessageSquare className="h-4 w-4" />}
-                  meta="Today · 10:42 AM · Claude"
-                  title="Research Dashboard Prototype"
-                  body="Generated an interactive React prototype for a research insight dashboard."
-                />
-                <TimelineEvent
-                  icon={<Upload className="h-4 w-4" />}
-                  meta="Yesterday · 6:04 PM · ChatGPT"
-                  title="Export imported"
-                  body="Imported 428 conversations, 2,941 messages, and 87 inbox items."
-                />
-              </div>
-            </Card>
-          </div>
-
-          <div className="mt-3">
-            <Card id="search">
-              <div className="mb-6 flex items-start justify-between gap-4">
-                <div>
-                  <Tag>Activity table</Tag>
-                  <h3 className="mt-5 font-serif text-3xl uppercase">Recent normalized events</h3>
+              {/* Progress Bar */}
+              <div className="mt-4">
+                <div className="h-1 w-full rounded-full bg-paper-200">
+                  <div
+                    className="h-1 rounded-full bg-ink transition-all"
+                    style={{ width: `${project.progress}%` }}
+                  />
                 </div>
-                <Button variant="ghost">View all</Button>
+                <p className="mt-2 text-[10px] font-sans uppercase tracking-[0.1em] text-[var(--grey-500)]">
+                  {project.progress}% COMPLETE
+                </p>
               </div>
-              <DataTable rows={activityRows} />
-            </Card>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Inbox Triage Preview + Recent Artifacts */}
+      <section className="border-b border-line-hair bg-paper-0 px-8 py-16 lg:px-16">
+        <div className="grid gap-8 xl:grid-cols-[1.4fr_0.6fr]">
+          {/* Inbox Triage Preview */}
+          <div className="rounded-[var(--radius-2)] border border-line-hair bg-paper-0 p-6">
+            <div className="flex items-start justify-between">
+              <div>
+                <span className="editorial-tag">INBOX PREVIEW</span>
+                <h3 className="mt-4 font-serif text-2xl uppercase tracking-tight">
+                  UNREVIEWED AI WORK
+                </h3>
+              </div>
+              <div className="grid h-14 w-14 place-items-center border border-line-medium bg-paper-50 font-serif text-3xl">
+                14
+              </div>
+            </div>
+
+            <div className="mt-6 divide-y divide-line-hair border-t border-line-hair">
+              {inboxItems.map((item, index) => (
+                <div
+                  key={index}
+                  className="grid grid-cols-[40px_1fr_auto] items-center gap-4 py-4"
+                >
+                  <span className="grid h-10 w-10 place-items-center border border-line-medium text-[10px] font-sans uppercase tracking-wider">
+                    {item.platform[0]}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm text-[var(--grey-700)]">{item.title}</p>
+                    <p className="mt-0.5 text-[10px] font-sans uppercase tracking-[0.1em] text-[var(--grey-500)]">
+                      {item.platform} · {item.time}
+                    </p>
+                  </div>
+                  <span className="editorial-tag">{item.type}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link
+                href="/inbox"
+                className="rounded-[var(--radius-2)] bg-ink px-4 py-2 text-[11px] font-sans uppercase tracking-[0.12em] text-paper-0 transition-opacity hover:opacity-80"
+              >
+                OPEN INBOX
+              </Link>
+              <button className="rounded-[var(--radius-2)] border border-line-medium bg-paper-0 px-4 py-2 text-[11px] font-sans uppercase tracking-[0.12em] text-ink transition-colors hover:bg-paper-100">
+                EXTRACT TASKS
+              </button>
+            </div>
           </div>
-        </section>
-      </main>
+
+          {/* Recent Artifacts */}
+          <div className="rounded-[var(--radius-2)] border border-line-hair bg-paper-0 p-6">
+            <span className="editorial-tag">RECENT ARTIFACTS</span>
+            <div className="mt-6 space-y-3">
+              {artifacts.map((artifact, index) => (
+                <div
+                  key={index}
+                  className="group flex items-center gap-4 rounded-[var(--radius-2)] border border-line-hair p-4 transition-all hover:border-line-medium hover:bg-paper-50"
+                >
+                  <div className="grid h-12 w-12 place-items-center border border-line-hair bg-paper-100 dot-field">
+                    <artifact.icon className="h-5 w-5 text-[var(--grey-600)]" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm">{artifact.title}</p>
+                    <div className="mt-1 flex items-center gap-2">
+                      <span className="platform-badge">{artifact.type}</span>
+                      <span className="text-[10px] text-[var(--grey-500)]">{artifact.platform}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <Link
+              href="/artifacts"
+              className="mt-6 block text-center text-[11px] font-sans uppercase tracking-[0.12em] text-[var(--grey-600)] underline underline-offset-4 transition-colors hover:text-ink"
+            >
+              VIEW ALL ARTIFACTS
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Timeline Preview */}
+      <section className="bg-paper-50 px-8 py-16 lg:px-16">
+        <div className="mb-8">
+          <p className="tech-label">CHRONOLOGICAL STREAM</p>
+          <h3 className="mt-2 font-serif text-2xl uppercase tracking-tight">RECENT ACTIVITY</h3>
+        </div>
+
+        <div className="relative border-l border-line-strong pl-8">
+          <TimelineEvent
+            icon={<MessageSquare className="h-4 w-4" />}
+            time="TODAY · 10:42 AM"
+            platform="CLAUDE"
+            title="Research Dashboard Prototype"
+            body="Generated an interactive React prototype for a research insight dashboard with filtering and export capabilities."
+          />
+          <TimelineEvent
+            icon={<Upload className="h-4 w-4" />}
+            time="YESTERDAY · 6:04 PM"
+            platform="CHATGPT"
+            title="Conversation Export Imported"
+            body="Imported 428 conversations, 2,941 messages, and 87 inbox items from ChatGPT export."
+          />
+          <TimelineEvent
+            icon={<Sparkles className="h-4 w-4" />}
+            time="YESTERDAY · 2:15 PM"
+            platform="GEMINI"
+            title="Competitor Analysis Complete"
+            body="Completed competitive analysis of 5 AI dashboard products with feature comparison matrix."
+          />
+        </div>
+
+        <Link
+          href="/timeline"
+          className="mt-8 inline-block text-[11px] font-sans uppercase tracking-[0.12em] text-[var(--grey-600)] underline underline-offset-4 transition-colors hover:text-ink"
+        >
+          VIEW FULL TIMELINE
+        </Link>
+      </section>
     </div>
   );
 }
 
-function InboxCount() {
+function IntelligenceCard({
+  number,
+  label,
+  tag,
+  trend,
+}: {
+  number: string;
+  label: string;
+  tag: string;
+  trend: string;
+}) {
   return (
-    <div className="grid h-16 w-16 place-items-center border border-line-medium bg-paper-50 font-serif text-3xl">
-      14
+    <div className="group rounded-[var(--radius-2)] border border-line-hair bg-paper-0 p-6 transition-all hover:-translate-y-0.5 hover:border-line-medium hover:shadow-line">
+      <span className="editorial-tag">{tag}</span>
+      <div className="mt-6 flex items-end justify-between">
+        <div>
+          <p className="stat-numeral">{number}</p>
+          <p className="mt-2 text-[11px] font-sans uppercase tracking-[0.14em] text-[var(--grey-600)]">
+            {label}
+          </p>
+        </div>
+        <div className="measurement-line h-12" />
+      </div>
+      <div className="mt-4 border-t border-line-hair pt-4">
+        <p className="text-[10px] font-sans uppercase tracking-[0.1em] text-[var(--grey-500)]">
+          {trend}
+        </p>
+      </div>
     </div>
   );
 }
 
 function TimelineEvent({
   icon,
-  meta,
+  time,
+  platform,
   title,
   body,
 }: {
   icon: React.ReactNode;
-  meta: string;
+  time: string;
+  platform: string;
   title: string;
   body: string;
 }) {
   return (
-    <div className="relative">
-      <span className="absolute -left-[39px] top-0 grid h-6 w-6 place-items-center rounded-full border border-ink bg-paper-0">
+    <div className="relative mb-8 last:mb-0">
+      <span className="absolute -left-[44px] top-0 grid h-7 w-7 place-items-center rounded-full border border-ink bg-paper-0">
         {icon}
       </span>
-      <p className="text-[11px] uppercase tracking-[0.14em] text-[var(--grey-500)]">{meta}</p>
-      <h4 className="mt-2 font-serif text-xl uppercase">{title}</h4>
-      <p className="mt-2 text-sm leading-6 text-[var(--grey-700)]">{body}</p>
+      <div className="flex items-center gap-3">
+        <p className="text-[10px] font-sans uppercase tracking-[0.14em] text-[var(--grey-500)]">
+          {time}
+        </p>
+        <span className="platform-badge">{platform}</span>
+      </div>
+      <h4 className="mt-2 font-serif text-xl uppercase tracking-tight">{title}</h4>
+      <p className="mt-2 text-sm leading-relaxed text-[var(--grey-700)]">{body}</p>
     </div>
   );
 }
