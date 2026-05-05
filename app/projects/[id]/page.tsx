@@ -15,8 +15,9 @@ import { CommandPalette } from "@/components/ui/command-palette";
 import { Sidebar } from "@/components/ui/sidebar";
 import { projects } from "@/lib/projects-data";
 
-export default function ProjectDetailPage({ params }: { params: { id: string } }) {
-  const project = projects.find((item) => item.id === params.id);
+export default async function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const project = projects.find((item) => item.id === id);
 
   if (!project) {
     notFound();
