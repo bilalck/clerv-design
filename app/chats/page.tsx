@@ -1,128 +1,83 @@
-import { ScreenHead } from "@/components/screen-head"
+import { ChatEmptyState, ChatErrorState, ChatLoadingState } from "@/components/chat/chat-states";
+import { ChatSummaryPanel } from "@/components/chat/chat-summary-panel";
+import { ExtractedItems } from "@/components/chat/extracted-items";
+import { RelatedWork } from "@/components/chat/related-work";
+import { Transcript } from "@/components/chat/transcript";
+import { Button } from "@/components/ui/button";
+import { Card, Tag } from "@/components/ui/card";
+import { CommandPalette } from "@/components/ui/command-palette";
+import { Sidebar } from "@/components/ui/sidebar";
 
 export default function ChatDetailPage() {
   return (
-    <section className="screen">
-      <ScreenHead kicker="04 / Chat Detail" number="4" title="Full source archive with extracted knowledge.">
-        Every conversation is preserved verbatim, with structured extractions surfaced alongside.
-      </ScreenHead>
+    <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[304px_minmax(0,1fr)]">
+      <Sidebar />
 
-      <div className="grid">
-        <article className="panel wide">
-          <span className="tag">ChatGPT · Planning · Yesterday</span>
-          <h3>AI Activity Hub Planning</h3>
-          <p style={{ marginTop: 16 }}>
-            A structured planning conversation about a local-first AI work dashboard with Timeline, Inbox, Artifacts,
-            Chats and Projects.
-          </p>
-
-          <div className="callout">
-            <strong>AI Summary</strong>
-            <p>
-              Defined product concept, import-first architecture, core data model and MVP build plan. Identified
-              Timeline + Inbox as the leading screens to ship first.
-            </p>
+      <main className="min-w-0">
+        <header className="sticky top-0 z-20 border-b border-line-hair bg-paper-0/90 px-6 py-3 backdrop-blur md:px-10">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <p className="editorial-kicker">Chats / Source archive</p>
+            <CommandPalette />
           </div>
+        </header>
 
-          <div className="table-wrap">
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Extracted</th>
-                  <th>Items</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Tasks</td>
-                  <td>Create schema · Design inbox triage · Define artifact metadata</td>
-                </tr>
-                <tr>
-                  <td>Decisions</td>
-                  <td>Use import-first model · Start with Timeline + Inbox</td>
-                </tr>
-                <tr>
-                  <td>Artifacts</td>
-                  <td>Product plan document · Dashboard IA sketch</td>
-                </tr>
-                <tr>
-                  <td>People</td>
-                  <td>—</td>
-                </tr>
-                <tr>
-                  <td>Sensitive</td>
-                  <td>None detected</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div className="btn-row">
-            <button className="btn primary">Open transcript</button>
-            <button className="btn quiet">Re-extract</button>
-            <button className="btn quiet">Export</button>
-            <button className="btn quiet">Tag</button>
-          </div>
-        </article>
-
-        <article className="panel">
-          <span className="tag">Related work</span>
-          <div className="list">
-            <div className="item">
-              <span className="iconbox">A</span>
-              <p>AI Activity Product Plan</p>
-              <span className="badge">Doc</span>
-            </div>
-            <div className="item">
-              <span className="iconbox">T</span>
-              <p>Timeline Wireframe</p>
-              <span className="badge">Flow</span>
-            </div>
-            <div className="item">
-              <span className="iconbox">P</span>
-              <p>Personal AI Dashboard</p>
-              <span className="badge">Project</span>
-            </div>
-            <div className="item">
-              <span className="iconbox">D</span>
-              <p>Use import-first architecture</p>
-              <span className="badge success">Decision</span>
-            </div>
-          </div>
-        </article>
-
-        <article className="panel full">
-          <span className="tag">Transcript</span>
-          <div className="timeline">
-            <div className="event">
-              <div className="event-time">You · 9:18 AM</div>
-              <p style={{ marginTop: 4 }}>
-                I want to design a unified AI activity dashboard. Can we start by mapping the structure?
+        <section className="border-b border-line-hair bg-paper-0 px-6 py-20 md:px-10 lg:px-20">
+          <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_1px]">
+            <div>
+              <p className="editorial-kicker">04 / Chat Detail</p>
+              <div className="my-8 font-serif text-7xl leading-none md:text-8xl">4</div>
+              <h1 className="editorial-title max-w-5xl text-6xl md:text-8xl">
+                Source history, transformed into usable knowledge.
+              </h1>
+              <p className="mt-8 max-w-2xl text-[15px] leading-[1.72] text-[var(--grey-700)]">
+                Chat Detail preserves the full source transcript while surfacing summaries,
+                decisions, tasks, artifacts, links, tags, project context and related work.
               </p>
             </div>
-            <div className="event">
-              <div className="event-time">ChatGPT · 9:18 AM</div>
-              <p style={{ marginTop: 4 }}>
-                Sure. The cleanest mental model is four parallel streams — chats, artifacts, decisions and tasks — all
-                joined by a unifying activity timeline. Let&apos;s sketch each.
-              </p>
-            </div>
-            <div className="event">
-              <div className="event-time">You · 9:21 AM</div>
-              <p style={{ marginTop: 4 }}>
-                What&apos;s the right MVP? I can&apos;t ship all four at once.
-              </p>
-            </div>
-            <div className="event">
-              <div className="event-time">ChatGPT · 9:22 AM</div>
-              <p style={{ marginTop: 4 }}>
-                Timeline + Inbox. Timeline gives the &quot;what did I do recently&quot; view. Inbox gives the daily
-                triage loop. Everything else can be progressively layered.
-              </p>
-            </div>
+            <div className="hidden w-px bg-line-strong lg:block" />
           </div>
-        </article>
-      </div>
-    </section>
-  )
+
+          <div className="mt-16">
+            <Card>
+              <div className="flex flex-col justify-between gap-6 xl:flex-row xl:items-start">
+                <div>
+                  <div className="flex flex-wrap gap-2">
+                    <Tag>ChatGPT</Tag>
+                    <Tag>Planning</Tag>
+                    <Tag>Personal AI Dashboard</Tag>
+                  </div>
+                  <h2 className="mt-5 font-serif text-4xl uppercase leading-tight">
+                    AI Activity Hub Planning
+                  </h2>
+                  <p className="mt-4 max-w-3xl text-sm leading-6 text-[var(--grey-700)]">
+                    Original title, platform, date, project, model metadata, tags and imported source reference.
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button variant="primary">Open source</Button>
+                  <Button variant="ghost">Add tags</Button>
+                  <Button variant="ghost">Archive</Button>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          <div className="mt-3 grid gap-3 xl:grid-cols-[minmax(0,1fr)_340px]">
+            <div className="grid gap-3">
+              <ChatSummaryPanel />
+              <ExtractedItems />
+              <Transcript />
+            </div>
+
+            <aside className="grid gap-3 self-start">
+              <RelatedWork />
+              <ChatLoadingState />
+              <ChatEmptyState />
+              <ChatErrorState />
+            </aside>
+          </div>
+        </section>
+      </main>
+    </div>
+  );
 }

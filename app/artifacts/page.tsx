@@ -1,120 +1,123 @@
-import { ScreenHead } from "@/components/screen-head"
+import { ArtifactCard, type Artifact } from "@/components/artifacts/artifact-card";
+import { ArtifactDetailPanel } from "@/components/artifacts/artifact-detail-panel";
+import { ArtifactEmptyState, ArtifactErrorState, ArtifactLoadingState } from "@/components/artifacts/artifact-states";
+import { ArtifactTable } from "@/components/artifacts/artifact-table";
+import { Button } from "@/components/ui/button";
+import { CommandPalette } from "@/components/ui/command-palette";
+import { Sidebar } from "@/components/ui/sidebar";
 
-const ARTIFACTS = [
-  { kind: "React", title: "Research Dashboard", meta: "Claude · Today · v3", badge: "Prototype", badgeClass: "" },
+const artifacts: Artifact[] = [
   {
-    kind: "Doc",
+    id: "art_001",
+    title: "Research Dashboard Prototype",
+    type: "Prototype",
+    platform: "Claude",
+    source: "Claude chat · Research dashboard concept",
+    project: "UX Research",
+    status: "Inbox",
+    version: "v3",
+    updated: "Today",
+  },
+  {
+    id: "art_002",
     title: "AI Activity Product Plan",
-    meta: "ChatGPT · Yesterday · v1",
-    badge: "Draft",
-    badgeClass: "warn",
+    type: "Document",
+    platform: "ChatGPT",
+    source: "ChatGPT chat · AI Activity Hub Planning",
+    project: "Personal AI Dashboard",
+    status: "Draft",
+    version: "v1",
+    updated: "Yesterday",
   },
   {
-    kind: "Flow",
+    id: "art_003",
     title: "Inbox Triage Flow",
-    meta: "Manual Upload · This week",
-    badge: "Reviewed",
-    badgeClass: "success",
+    type: "Diagram",
+    platform: "Manual Upload",
+    source: "Manual file upload",
+    project: "Personal AI Dashboard",
+    status: "Reviewed",
+    version: "v2",
+    updated: "This week",
   },
   {
-    kind: "Code",
-    title: "Schema Migration v2",
-    meta: "Claude · 3 days ago · v2",
-    badge: "Draft",
-    badgeClass: "warn",
+    id: "art_004",
+    title: "Parser Utility",
+    type: "Code",
+    platform: "ChatGPT",
+    source: "ChatGPT chat · Export parser",
+    project: "Data Import",
+    status: "Used",
+    version: "v1",
+    updated: "This week",
   },
-  {
-    kind: "Image",
-    title: "Dashboard IA sketch",
-    meta: "Manual Upload · This week",
-    badge: "New",
-    badgeClass: "",
-  },
-  {
-    kind: "Slides",
-    title: "MVP Pitch Deck",
-    meta: "ChatGPT · Last week · v4",
-    badge: "Reviewed",
-    badgeClass: "success",
-  },
-]
+];
 
 export default function ArtifactsPage() {
+  const selected = artifacts[0];
+
   return (
-    <section className="screen">
-      <ScreenHead kicker="03 / Artifacts" number="3" title="Generated output lifecycle manager.">
-        Artifacts are treated as first-class outputs, not attachments buried inside chats.
-      </ScreenHead>
+    <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[304px_minmax(0,1fr)]">
+      <Sidebar />
 
-      <div className="artifact-grid">
-        {ARTIFACTS.map((a) => (
-          <article key={a.title} className="artifact">
-            <div className="thumb">{a.kind}</div>
-            <div className="artifact-body">
-              <span className={`badge ${a.badgeClass}`}>{a.badge}</span>
-              <h3>{a.title}</h3>
-              <p>{a.meta}</p>
+      <main className="min-w-0">
+        <header className="sticky top-0 z-20 border-b border-line-hair bg-paper-0/90 px-6 py-3 backdrop-blur md:px-10">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <p className="editorial-kicker">Artifacts / Output library</p>
+            <CommandPalette />
+          </div>
+        </header>
+
+        <section className="border-b border-line-hair bg-paper-0 px-6 py-20 md:px-10 lg:px-20">
+          <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_1px]">
+            <div>
+              <p className="editorial-kicker">03 / Artifacts</p>
+              <div className="my-8 font-serif text-7xl leading-none md:text-8xl">3</div>
+              <h1 className="editorial-title max-w-5xl text-6xl md:text-8xl">
+                The output lifecycle of AI work.
+              </h1>
+              <p className="mt-8 max-w-2xl text-[15px] leading-[1.72] text-[var(--grey-700)]">
+                Artifacts are first-class outputs: documents, code, canvases, images, diagrams,
+                prototypes and files linked back to source conversations and projects.
+              </p>
             </div>
-          </article>
-        ))}
-      </div>
+            <div className="hidden w-px bg-line-strong lg:block" />
+          </div>
 
-      <div className="grid" style={{ marginTop: 24 }}>
-        <article className="panel wide">
-          <span className="tag">Artifact detail preview</span>
-          <h3>AI Activity Dashboard Product Plan</h3>
-          <div className="table-wrap">
-            <table className="table">
-              <tbody>
-                <tr>
-                  <td>Type</td>
-                  <td>Document</td>
-                </tr>
-                <tr>
-                  <td>Source</td>
-                  <td>ChatGPT conversation · May 4, 2026</td>
-                </tr>
-                <tr>
-                  <td>Project</td>
-                  <td>Personal AI Dashboard</td>
-                </tr>
-                <tr>
-                  <td>Status</td>
-                  <td>
-                    <span className="badge warn">Draft</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Tags</td>
-                  <td>dashboard, IA, MVP, planning</td>
-                </tr>
-                <tr>
-                  <td>Versions</td>
-                  <td>v1 (current) · v0 (archived)</td>
-                </tr>
-              </tbody>
-            </table>
+          <div className="mt-16 flex flex-col justify-between gap-6 xl:flex-row xl:items-center">
+            <div className="flex flex-wrap gap-2">
+              <Button variant="primary">Grid</Button>
+              <Button variant="ghost">Table</Button>
+              <Button variant="ghost">By project</Button>
+              <Button variant="ghost">By type</Button>
+              <Button variant="ghost">Recently created</Button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="primary">Upload artifact</Button>
+              <Button variant="ghost">Import from Inbox</Button>
+            </div>
           </div>
-          <div className="btn-row">
-            <button className="btn primary">Open</button>
-            <button className="btn quiet">Rename</button>
-            <button className="btn quiet">Add tags</button>
-            <button className="btn quiet">Export</button>
-          </div>
-        </article>
 
-        <article className="panel">
-          <span className="tag">Source view</span>
-          <p>Linked back to source chat, timeline event, extracted tasks and related artifacts.</p>
-          <div className="flow">
-            <div className="node">Chat</div>
-            <div className="edge" aria-hidden="true" />
-            <div className="node">Artifact</div>
-            <div className="edge" aria-hidden="true" />
-            <div className="node">Task</div>
+          <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            {artifacts.map((artifact) => (
+              <ArtifactCard key={artifact.id} artifact={artifact} />
+            ))}
           </div>
-        </article>
-      </div>
-    </section>
-  )
+
+          <div className="mt-3 grid gap-3 xl:grid-cols-[minmax(0,1fr)_360px]">
+            <div className="grid gap-3">
+              <ArtifactDetailPanel artifact={selected} />
+              <ArtifactTable artifacts={artifacts} />
+            </div>
+
+            <aside className="grid gap-3 self-start">
+              <ArtifactLoadingState />
+              <ArtifactEmptyState />
+              <ArtifactErrorState />
+            </aside>
+          </div>
+        </section>
+      </main>
+    </div>
+  );
 }

@@ -1,128 +1,62 @@
-import { ScreenHead } from "@/components/screen-head"
+import { ProjectCard } from "@/components/projects/project-card";
+import { ProjectEmptyState, ProjectErrorState, ProjectLoadingState } from "@/components/projects/project-states";
+import { Button } from "@/components/ui/button";
+import { CommandPalette } from "@/components/ui/command-palette";
+import { Sidebar } from "@/components/ui/sidebar";
+import { projects } from "@/lib/projects-data";
 
-export default function ProjectDetailPage() {
+export default function ProjectsPage() {
   return (
-    <section className="screen">
-      <ScreenHead kicker="05 / Project Detail" number="5" title="Organize AI work around outcomes, not platforms.">
-        Projects bind chats, artifacts, decisions and tasks across platforms into a single workspace.
-      </ScreenHead>
+    <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[304px_minmax(0,1fr)]">
+      <Sidebar />
 
-      <div className="grid">
-        <article className="panel full">
-          <span className="tag">Project</span>
-          <h3>Personal AI Activity Hub</h3>
-          <p style={{ marginTop: 16 }}>
-            A dashboard to unify AI chats, artifacts, timelines, inbox items and generated outputs. Owned by Bilal,
-            currently in MVP definition.
-          </p>
-          <div className="btn-row">
-            <button className="btn primary">Open workspace</button>
-            <button className="btn quiet">Edit</button>
-            <button className="btn quiet">Archive</button>
+      <main className="min-w-0">
+        <header className="sticky top-0 z-20 border-b border-line-hair bg-paper-0/90 px-6 py-3 backdrop-blur md:px-10">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <p className="editorial-kicker">Projects / Work containers</p>
+            <CommandPalette />
           </div>
-        </article>
+        </header>
 
-        <article className="panel">
-          <span className="tag">Recent activity</span>
-          <div className="list">
-            <div className="item">
-              <span className="iconbox">G</span>
-              <p>Product architecture plan</p>
-              <span className="badge">Chat</span>
+        <section className="border-b border-line-hair bg-paper-0 px-6 py-20 md:px-10 lg:px-20">
+          <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_1px]">
+            <div>
+              <p className="editorial-kicker">05 / Projects</p>
+              <div className="my-8 font-serif text-7xl leading-none md:text-8xl">5</div>
+              <h1 className="editorial-title max-w-5xl text-6xl md:text-8xl">
+                Organize AI work around outcomes.
+              </h1>
+              <p className="mt-8 max-w-2xl text-[15px] leading-[1.72] text-[var(--grey-700)]">
+                Projects group timeline events, inbox items, artifacts, chats, tasks and decisions
+                into durable work containers.
+              </p>
             </div>
-            <div className="item">
-              <span className="iconbox">C</span>
-              <p>React prototype</p>
-              <span className="badge">Artifact</span>
-            </div>
-            <div className="item">
-              <span className="iconbox">M</span>
-              <p>IA sketch upload</p>
-              <span className="badge">File</span>
-            </div>
+            <div className="hidden w-px bg-line-strong lg:block" />
           </div>
-        </article>
 
-        <article className="panel">
-          <span className="tag">Artifacts</span>
-          <div className="list">
-            <div className="item">
-              <span className="iconbox">D</span>
-              <p>Product plan document</p>
-              <span className="badge">Doc</span>
+          <div className="mt-16 flex flex-col justify-between gap-6 xl:flex-row xl:items-center">
+            <div className="flex flex-wrap gap-2">
+              <Button variant="primary">All projects</Button>
+              <Button variant="ghost">Active</Button>
+              <Button variant="ghost">Review</Button>
+              <Button variant="ghost">Archived</Button>
             </div>
-            <div className="item">
-              <span className="iconbox">W</span>
-              <p>Timeline wireframe</p>
-              <span className="badge">Design</span>
-            </div>
-            <div className="item">
-              <span className="iconbox">R</span>
-              <p>Research dashboard prototype</p>
-              <span className="badge">React</span>
-            </div>
+            <Button variant="primary">Create project</Button>
           </div>
-        </article>
 
-        <article className="panel">
-          <span className="tag">Decisions</span>
-          <div className="list">
-            <div className="item">
-              <span className="iconbox">01</span>
-              <p>Start import-first</p>
-              <span className="badge success">Accepted</span>
-            </div>
-            <div className="item">
-              <span className="iconbox">02</span>
-              <p>Avoid live integrations in MVP</p>
-              <span className="badge success">Accepted</span>
-            </div>
-            <div className="item">
-              <span className="iconbox">03</span>
-              <p>Defer collaboration features</p>
-              <span className="badge warn">Pending</span>
-            </div>
+          <div className="mt-6 grid gap-3 xl:grid-cols-3">
+            {projects.map((project) => (
+              <ProjectCard key={project.id} project={project} />
+            ))}
           </div>
-        </article>
 
-        <article className="panel wide">
-          <span className="tag">Task board</span>
-          <div className="board">
-            <div className="lane">
-              <span className="badge">Todo</span>
-              <div className="task">Design Timeline empty state</div>
-              <div className="task">Create import confirmation flow</div>
-              <div className="task">Spec Inbox keyboard shortcuts</div>
-            </div>
-            <div className="lane">
-              <span className="badge warn">Doing</span>
-              <div className="task">Define artifact metadata</div>
-              <div className="task">Build Inbox triage cards</div>
-            </div>
-            <div className="lane">
-              <span className="badge success">Done</span>
-              <div className="task">Define schema</div>
-              <div className="task">First Timeline pass</div>
-            </div>
+          <div className="mt-3 grid gap-3 xl:grid-cols-3">
+            <ProjectLoadingState />
+            <ProjectEmptyState />
+            <ProjectErrorState />
           </div>
-        </article>
-
-        <article className="panel">
-          <span className="tag">Activity</span>
-          <div className="chart" aria-label="Activity bar chart for the past week">
-            <span className="bar" style={{ height: "40%" }} />
-            <span className="bar" style={{ height: "70%" }} />
-            <span className="bar" style={{ height: "55%" }} />
-            <span className="bar" style={{ height: "90%" }} />
-            <span className="bar" style={{ height: "30%" }} />
-            <span className="bar" style={{ height: "60%" }} />
-            <span className="bar" style={{ height: "78%" }} />
-          </div>
-          <p style={{ marginTop: 14, fontSize: 12, color: "var(--g500)", letterSpacing: ".06em" }}>
-            42 events this week · +18% vs last
-          </p>
-        </article>
-      </div>
-    </section>
-  )
+        </section>
+      </main>
+    </div>
+  );
 }
