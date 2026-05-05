@@ -1,41 +1,78 @@
-import { Archive, CheckCircle2, Clock, FileCode2, FileImage, FileText, MessageSquare, Sparkles, Upload } from "lucide-react";
 import Link from "next/link";
+import { FileCode2, FileImage, FileText, Image as ImageIcon, MessageSquare, Sparkles } from "lucide-react";
+import {
+  PLATFORM_LABEL,
+  getProjectAggregates,
+  getRecordsSorted,
+  inferArtifactKind,
+  platformInitial,
+  platformLabel,
+  projectSlug,
+  recordType,
+  relativeTime,
+  timelineMeta,
+} from "@/lib/timeline-data";
 
-const inboxItems = [
-  { platform: "Claude", title: "Research dashboard prototype artifact", type: "Review", time: "2h ago" },
-  { platform: "ChatGPT", title: "AI platform activity dashboard plan", type: "New", time: "4h ago" },
-  { platform: "Manual", title: "Dashboard IA sketch upload", type: "File", time: "Yesterday" },
-];
-
-const projects = [
-  { name: "Personal AI Dashboard", events: 42, status: "Active", progress: 68 },
-  { name: "Design Systems", events: 18, status: "Active", progress: 45 },
-  { name: "Client UX Research", events: 9, status: "Paused", progress: 82 },
-];
-
-const artifacts = [
-  { type: "PDF", title: "Research Report v2", platform: "Claude", icon: FileText },
-  { type: "SVG", title: "Dashboard Wireframe", platform: "ChatGPT", icon: FileImage },
-  { type: "Code", title: "React Prototype", platform: "Claude", icon: FileCode2 },
-];
+const ARTIFACT_ICON = {
+  PDF: FileText,
+  SVG: FileImage,
+  Code: FileCode2,
+  Image: ImageIcon,
+  Doc: FileText,
+} as const;
 
 export default function HomePage() {
+  const allRecords = getRecordsSorted();
+  const projects = getProjectAggregates();
+
+  // Intelligence summary metrics
+  const chatCount = allRecords.filter((r) => recordType(r) === "chat").length;
+  const artifactCount = allRecords.filter((r) => recordType(r) === "artifact").length;
+  const inboxCount = allRecords.filter(
+    (r) => !r.project || r.tags.includes("manual-entry") || r.tags.includes("triage"),
+  ).length;
+
+  // Artifact kind breakdown for the trend line
+  const artifactKindCounts = allRecords
+    .filter((r) => recordType(r) === "artifact")
+    .reduce<Record<string, number>>((acc, r) => {
+      const k = inferArtifactKind(r);
+      acc[k] = (acc[k] ?? 0) + 1;
+      return acc;
+    }, {});
+  const artifactTrend =
+    Object.entries(artifactKindCounts)
+      .map(([k, n]) => `${n} ${k}${n > 1 ? "s" : ""}`)
+      .join(", ") || "No artifacts yet";
+
+  // Platform diversity — used for chats trend
+  const platformCount = new Set(allRecords.map((r) => r.platform)).size;
+  const linkedCount = timelineMeta.stats.cross_platform_links;
+
+  // Inbox preview — first 3 records that need triage
+  const inboxItems = allRecords
+    .filter((r) => !r.project || r.tags.includes("manual-entry"))
+    .slice(0, 3);
+
+  // Recent artifacts — first 3 artifact records
+  const recentArtifacts = allRecords.filter((r) => recordType(r) === "artifact").slice(0, 3);
+
+  // Recent activity timeline — first 3 records overall
+  const recentActivity = allRecords.slice(0, 3);
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="border-b border-line-hair bg-paper-0">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_0.8fr]">
-          {/* Left Column */}
           <div className="flex flex-col justify-between p-8 lg:p-16">
             <div>
               <p className="editorial-kicker">00 — INTELLIGENCE SUMMARY</p>
               <div className="my-8 measurement-line h-24" />
-              <h1 className="editorial-title max-w-2xl text-5xl lg:text-7xl">
-                MORNING PROTOCOL
-              </h1>
+              <h1 className="editorial-title max-w-2xl text-5xl lg:text-7xl">MORNING PROTOCOL</h1>
               <p className="mt-8 max-w-xl text-[15px] leading-[1.7] text-[var(--grey-700)]">
-                A calm daily dashboard for reviewing recent AI activity, inbox pressure, 
-                generated artifacts, extracted tasks, and active projects.
+                A calm daily dashboard for reviewing recent AI activity, inbox pressure, generated
+                artifacts, extracted tasks, and active projects.
               </p>
             </div>
             <div className="mt-12 flex flex-wrap gap-3">
@@ -54,18 +91,17 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Right Column - Visual Zone */}
           <div className="relative hidden min-h-[480px] border-l border-line-hair bg-paper-100 lg:block">
-            {/* Technical Frame */}
             <div className="absolute inset-8 border border-line-soft" />
             <div className="absolute bottom-0 right-0 h-1/2 w-1/2 dot-field opacity-60" />
-            
-            {/* Floating Card */}
             <div className="absolute bottom-8 left-8 right-8 border border-line-hair bg-paper-0/95 p-6 shadow-line backdrop-blur">
-              <p className="tech-label">DASHBOARD PROMISE</p>
+              <p className="tech-label">CORPUS</p>
               <p className="mt-3 text-sm leading-relaxed text-[var(--grey-700)]">
-                Timeline = what happened. Inbox = what needs review. Artifacts = what was created. 
-                Projects = where it belongs.
+                {timelineMeta.record_count} records imported across {platformCount} platforms.
+                {linkedCount > 0 ? ` ${linkedCount} cross-platform link detected.` : ""}
+              </p>
+              <p className="mt-3 text-[10px] font-sans uppercase tracking-[0.1em] text-[var(--grey-500)]">
+                LAST IMPORT · {relativeTime(timelineMeta.generated_at)}
               </p>
             </div>
           </div>
@@ -82,9 +118,24 @@ export default function HomePage() {
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
-          <IntelligenceCard number="6" label="NEW CHATS" tag="TODAY" trend="+2 from yesterday" />
-          <IntelligenceCard number="3" label="ARTIFACTS" tag="CREATED" trend="1 PDF, 1 SVG, 1 Code" />
-          <IntelligenceCard number="14" label="INBOX ITEMS" tag="PENDING" trend="4 high priority" />
+          <IntelligenceCard
+            number={chatCount.toString().padStart(2, "0")}
+            label="CHATS"
+            tag="ALL TIME"
+            trend={`${platformCount} platforms · ${linkedCount} linked`}
+          />
+          <IntelligenceCard
+            number={artifactCount.toString().padStart(2, "0")}
+            label="ARTIFACTS"
+            tag="CREATED"
+            trend={artifactTrend}
+          />
+          <IntelligenceCard
+            number={inboxCount.toString().padStart(2, "0")}
+            label="INBOX ITEMS"
+            tag="PENDING"
+            trend="Needs project assignment"
+          />
         </div>
       </section>
 
@@ -104,37 +155,48 @@ export default function HomePage() {
         </div>
 
         <div className="grid gap-4 lg:grid-cols-3">
-          {projects.map((project) => (
-            <div
-              key={project.name}
+          {projects.slice(0, 3).map((project) => (
+            <Link
+              key={project.id}
+              href={`/projects/${project.id}`}
               className="group rounded-[var(--radius-2)] border border-line-hair bg-paper-0 p-5 transition-all hover:-translate-y-0.5 hover:border-line-medium hover:shadow-line"
             >
               <div className="flex items-start justify-between">
-                <div>
-                  <p className="font-serif text-lg uppercase tracking-tight">{project.name}</p>
+                <div className="min-w-0">
+                  <p className="truncate font-serif text-lg uppercase tracking-tight">
+                    {project.name}
+                  </p>
                   <p className="mt-1 text-[11px] font-sans uppercase tracking-[0.12em] text-[var(--grey-500)]">
-                    {project.events} EVENTS
+                    {project.recordCount} EVENTS · {project.platforms.length} PLATFORMS
                   </p>
                 </div>
-                <span
-                  className={`editorial-tag ${project.status === "Paused" ? "opacity-60" : ""}`}
-                >
-                  {project.status}
+                <span className="editorial-tag">{relativeTime(project.lastActivity)}</span>
+              </div>
+              <div className="mt-4 flex items-center gap-2">
+                {project.platforms.slice(0, 4).map((p) => (
+                  <span
+                    key={p}
+                    className="grid h-7 w-7 place-items-center border border-line-hair bg-paper-50 text-[10px] font-sans uppercase tracking-wider text-[var(--grey-700)]"
+                    title={platformLabel(p)}
+                  >
+                    {platformInitial(p)}
+                  </span>
+                ))}
+                {project.platforms.length > 4 ? (
+                  <span className="text-[10px] font-sans uppercase tracking-[0.1em] text-[var(--grey-500)]">
+                    +{project.platforms.length - 4}
+                  </span>
+                ) : null}
+              </div>
+              <div className="mt-4 flex items-center justify-between border-t border-line-hair pt-3">
+                <span className="text-[10px] font-sans uppercase tracking-[0.1em] text-[var(--grey-500)]">
+                  {project.chatCount} CHATS · {project.artifactCount} ARTIFACTS
+                </span>
+                <span className="text-[10px] font-sans uppercase tracking-[0.1em] text-[var(--grey-500)] underline-offset-4 group-hover:underline">
+                  OPEN
                 </span>
               </div>
-              {/* Progress Bar */}
-              <div className="mt-4">
-                <div className="h-1 w-full rounded-full bg-paper-200">
-                  <div
-                    className="h-1 rounded-full bg-ink transition-all"
-                    style={{ width: `${project.progress}%` }}
-                  />
-                </div>
-                <p className="mt-2 text-[10px] font-sans uppercase tracking-[0.1em] text-[var(--grey-500)]">
-                  {project.progress}% COMPLETE
-                </p>
-              </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
@@ -142,7 +204,6 @@ export default function HomePage() {
       {/* Inbox Triage Preview + Recent Artifacts */}
       <section className="border-b border-line-hair bg-paper-0 px-8 py-16 lg:px-16">
         <div className="grid gap-8 xl:grid-cols-[1.4fr_0.6fr]">
-          {/* Inbox Triage Preview */}
           <div className="rounded-[var(--radius-2)] border border-line-hair bg-paper-0 p-6">
             <div className="flex items-start justify-between">
               <div>
@@ -152,29 +213,38 @@ export default function HomePage() {
                 </h3>
               </div>
               <div className="grid h-14 w-14 place-items-center border border-line-medium bg-paper-50 font-serif text-3xl">
-                14
+                {inboxCount}
               </div>
             </div>
 
-            <div className="mt-6 divide-y divide-line-hair border-t border-line-hair">
-              {inboxItems.map((item, index) => (
-                <div
-                  key={index}
-                  className="grid grid-cols-[40px_1fr_auto] items-center gap-4 py-4"
-                >
-                  <span className="grid h-10 w-10 place-items-center border border-line-medium text-[10px] font-sans uppercase tracking-wider">
-                    {item.platform[0]}
-                  </span>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm text-[var(--grey-700)]">{item.title}</p>
-                    <p className="mt-0.5 text-[10px] font-sans uppercase tracking-[0.1em] text-[var(--grey-500)]">
-                      {item.platform} · {item.time}
-                    </p>
-                  </div>
-                  <span className="editorial-tag">{item.type}</span>
-                </div>
-              ))}
-            </div>
+            {inboxItems.length > 0 ? (
+              <div className="mt-6 divide-y divide-line-hair border-t border-line-hair">
+                {inboxItems.map((item) => (
+                  <Link
+                    key={item.id}
+                    href={`/inbox?focus=${item.id}`}
+                    className="grid grid-cols-[40px_1fr_auto] items-center gap-4 py-4 transition-colors hover:bg-paper-50"
+                  >
+                    <span className="grid h-10 w-10 place-items-center border border-line-medium text-[10px] font-sans uppercase tracking-wider">
+                      {platformInitial(item.platform)}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm text-[var(--grey-700)]">{item.title}</p>
+                      <p className="mt-0.5 text-[10px] font-sans uppercase tracking-[0.1em] text-[var(--grey-500)]">
+                        {platformLabel(item.platform)} · {relativeTime(item.started_at)}
+                      </p>
+                    </div>
+                    <span className="editorial-tag">
+                      {recordType(item).toUpperCase()}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="mt-6 border-t border-line-hair pt-6 text-sm text-[var(--grey-500)]">
+                Inbox clear. All records are assigned to projects.
+              </p>
+            )}
 
             <div className="mt-6 flex flex-wrap gap-3">
               <Link
@@ -183,34 +253,46 @@ export default function HomePage() {
               >
                 OPEN INBOX
               </Link>
-              <button className="rounded-[var(--radius-2)] border border-line-medium bg-paper-0 px-4 py-2 text-[11px] font-sans uppercase tracking-[0.12em] text-ink transition-colors hover:bg-paper-100">
+              <Link
+                href="/timeline"
+                className="rounded-[var(--radius-2)] border border-line-medium bg-paper-0 px-4 py-2 text-[11px] font-sans uppercase tracking-[0.12em] text-ink transition-colors hover:bg-paper-100"
+              >
                 EXTRACT TASKS
-              </button>
+              </Link>
             </div>
           </div>
 
-          {/* Recent Artifacts */}
           <div className="rounded-[var(--radius-2)] border border-line-hair bg-paper-0 p-6">
             <span className="editorial-tag">RECENT ARTIFACTS</span>
-            <div className="mt-6 space-y-3">
-              {artifacts.map((artifact, index) => (
-                <div
-                  key={index}
-                  className="group flex items-center gap-4 rounded-[var(--radius-2)] border border-line-hair p-4 transition-all hover:border-line-medium hover:bg-paper-50"
-                >
-                  <div className="grid h-12 w-12 place-items-center border border-line-hair bg-paper-100 dot-field">
-                    <artifact.icon className="h-5 w-5 text-[var(--grey-600)]" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm">{artifact.title}</p>
-                    <div className="mt-1 flex items-center gap-2">
-                      <span className="platform-badge">{artifact.type}</span>
-                      <span className="text-[10px] text-[var(--grey-500)]">{artifact.platform}</span>
+            {recentArtifacts.length > 0 ? (
+              <div className="mt-6 space-y-3">
+                {recentArtifacts.map((artifact) => {
+                  const kind = inferArtifactKind(artifact);
+                  const Icon = ARTIFACT_ICON[kind];
+                  return (
+                    <div
+                      key={artifact.id}
+                      className="group flex items-center gap-4 rounded-[var(--radius-2)] border border-line-hair p-4 transition-all hover:border-line-medium hover:bg-paper-50"
+                    >
+                      <div className="grid h-12 w-12 place-items-center border border-line-hair bg-paper-100 dot-field">
+                        <Icon className="h-5 w-5 text-[var(--grey-600)]" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm">{artifact.title}</p>
+                        <div className="mt-1 flex items-center gap-2">
+                          <span className="platform-badge">{kind}</span>
+                          <span className="truncate text-[10px] text-[var(--grey-500)]">
+                            {PLATFORM_LABEL[artifact.platform]}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="mt-6 text-sm text-[var(--grey-500)]">No artifacts in corpus.</p>
+            )}
             <Link
               href="/artifacts"
               className="mt-6 block text-center text-[11px] font-sans uppercase tracking-[0.12em] text-[var(--grey-600)] underline underline-offset-4 transition-colors hover:text-ink"
@@ -229,27 +311,29 @@ export default function HomePage() {
         </div>
 
         <div className="relative border-l border-line-strong pl-8">
-          <TimelineEvent
-            icon={<MessageSquare className="h-4 w-4" />}
-            time="TODAY · 10:42 AM"
-            platform="CLAUDE"
-            title="Research Dashboard Prototype"
-            body="Generated an interactive React prototype for a research insight dashboard with filtering and export capabilities."
-          />
-          <TimelineEvent
-            icon={<Upload className="h-4 w-4" />}
-            time="YESTERDAY · 6:04 PM"
-            platform="CHATGPT"
-            title="Conversation Export Imported"
-            body="Imported 428 conversations, 2,941 messages, and 87 inbox items from ChatGPT export."
-          />
-          <TimelineEvent
-            icon={<Sparkles className="h-4 w-4" />}
-            time="YESTERDAY · 2:15 PM"
-            platform="GEMINI"
-            title="Competitor Analysis Complete"
-            body="Completed competitive analysis of 5 AI dashboard products with feature comparison matrix."
-          />
+          {recentActivity.map((r) => {
+            const t = recordType(r);
+            const icon =
+              t === "chat" ? (
+                <MessageSquare className="h-4 w-4" />
+              ) : t === "artifact" ? (
+                <Sparkles className="h-4 w-4" />
+              ) : (
+                <FileText className="h-4 w-4" />
+              );
+            return (
+              <TimelineEvent
+                key={r.id}
+                icon={icon}
+                time={`${relativeTime(r.started_at).toUpperCase()}`}
+                platform={PLATFORM_LABEL[r.platform].toUpperCase()}
+                title={r.title}
+                body={r.summary ?? r.raw_excerpt ?? ""}
+                projectHref={r.project ? `/projects/${projectSlug(r.project)}` : undefined}
+                projectName={r.project ?? null}
+              />
+            );
+          })}
         </div>
 
         <Link
@@ -301,26 +385,40 @@ function TimelineEvent({
   platform,
   title,
   body,
+  projectHref,
+  projectName,
 }: {
   icon: React.ReactNode;
   time: string;
   platform: string;
   title: string;
   body: string;
+  projectHref?: string;
+  projectName?: string | null;
 }) {
   return (
     <div className="relative mb-8 last:mb-0">
       <span className="absolute -left-[44px] top-0 grid h-7 w-7 place-items-center rounded-full border border-ink bg-paper-0">
         {icon}
       </span>
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <p className="text-[10px] font-sans uppercase tracking-[0.14em] text-[var(--grey-500)]">
           {time}
         </p>
         <span className="platform-badge">{platform}</span>
+        {projectName && projectHref ? (
+          <Link
+            href={projectHref}
+            className="text-[10px] font-sans uppercase tracking-[0.14em] text-[var(--grey-600)] underline underline-offset-4 hover:text-ink"
+          >
+            {projectName}
+          </Link>
+        ) : null}
       </div>
       <h4 className="mt-2 font-serif text-xl uppercase tracking-tight">{title}</h4>
-      <p className="mt-2 text-sm leading-relaxed text-[var(--grey-700)]">{body}</p>
+      {body ? (
+        <p className="mt-2 text-sm leading-relaxed text-[var(--grey-700)]">{body}</p>
+      ) : null}
     </div>
   );
 }
