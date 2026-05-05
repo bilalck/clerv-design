@@ -48,8 +48,20 @@ export function Button({
 }: ButtonProps) {
   const Comp = asChild ? Slot : "button";
 
+  if (asChild) {
+    return (
+      <Comp
+        className={cn(buttonVariants({ variant, size, fullWidth }), loading && "relative text-transparent", className)}
+        aria-busy={loading || undefined}
+        {...props}
+      >
+        {children}
+      </Comp>
+    );
+  }
+
   return (
-    <Comp
+    <button
       className={cn(buttonVariants({ variant, size, fullWidth }), loading && "relative text-transparent", className)}
       aria-busy={loading || undefined}
       disabled={props.disabled || loading}
@@ -62,7 +74,7 @@ export function Button({
           className="absolute h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent text-inherit"
         />
       ) : null}
-    </Comp>
+    </button>
   );
 }
 
